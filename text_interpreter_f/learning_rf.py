@@ -11,24 +11,24 @@ def save_obj(obj, name):
           pickle.dump(obj, handle)
 
 
-def learning_(file_path, nltk_clean=True, str_clean=True):
+def learning_(rf, text_train, y, path_clf):
     """
-    :param file_path:
-    :param nltk_clean:
-    :param str_clean:
+
+    :param clf:
+    :param text_train:
+    :param y:
+    :param path_clf:
     :return:
     """
-    text_train, y, df = text_preprocessing.main(["-filepath", file_path,
-                                                 "-ntlk_clean", nltk_clean,
-                                                 "-str_clean", str_clean])
+
     # the the bag of word representation :
     vectorizer = TfidfVectorizer(max_df=0.8, min_df=3)
     X_train = vectorizer.fit_transform(text_train)
     features_names = vectorizer.get_feature_names()
     feature_names = np.asarray(features_names)
-    rf = RandomForestClassifier(n_estimators=1000)
     rf.fit(X_train, y)
     directory = os.getcwd()
-    save_obj(rf, os.path.join(directory, 'random_forest_classifier'))
-    return rf, feature_names
+    save_obj(rf, os.path.join(directory, path_clf))
+
+    return rf, X_train, feature_names
 

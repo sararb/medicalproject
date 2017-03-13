@@ -1,7 +1,4 @@
 import pickle
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from learning_rf import learning_
 
 
 def load_obj(name):
@@ -13,25 +10,22 @@ def load_obj(name):
         return pickle.load(f)
 
 
-def build_infos(df, patient_id, path_clf):
+def build_infos(rf, instance, feature_names):
     """
-    :param df:
-    :param instance: the review_text that we want to interpret
-    :param path_clf: the path to the classifier that we modeled from train data
+
+    :param rf:
+    :param instance:
+    :param feature_names:
     :return:
-    the list of the "n_estimator" different path_decision of the instance
-    the list of
     """
-    rf, feature_names = learning_()
     n_tree = rf.n_estimators
 
-    instance = df[df['patient_id'] == patient_id]
     # get the infos for each decision tree of the rf model :
     phrases = {}
     flag = {}
     missing_words = {}
     classes = {}
-    print('Rules used to predict sample %s: ' % patient_id)
+    print('Rules used to predict sample %s: ' % instance)
     for i in range(n_tree):
         phrases[i] = []
         flag[i] = []
