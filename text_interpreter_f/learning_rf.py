@@ -30,5 +30,5 @@ def learning_(rf, text_train, y, path_clf):
     directory = os.getcwd()
     save_obj(rf, os.path.join(directory, path_clf))
 
-    return rf, X_train, feature_names
+    return rf, X_train, feature_names, vectorizer
 
