@@ -1,6 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import tkinter as tk
 from tkinter.filedialog import *
 
+
+#Main class for the entire user interface
 class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
@@ -28,7 +33,7 @@ class Application(tk.Frame):
 
     def import_csv(self):
         filepath = askopenfilename(title="Import de dossiers patient",filetypes=[('csv files', '.csv'), ('all files', '.*')])
-        txt = filepath.read()
+        txt = filepath.
         print(txt)
         print (filepath)
 
@@ -42,7 +47,6 @@ class Application(tk.Frame):
         root3 = Tk()
         root3.title("Interprétation des modèles")
         root3.geometry('400x400+350+340')
-#Blabla
 
 root = tk.Tk()
 root.title("Interface d'apprentissage automatique")
