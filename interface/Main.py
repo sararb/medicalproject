@@ -92,7 +92,7 @@ class Page1(tk.Frame):
             print(eachRow)
 
     def write_in_database(self):
-        connection = MySQLdb.connect(host="localhost", user="root", passwd="Kaoutar08Ftouhi", db="medical_database")
+        connection = MySQLdb.connect(host="localhost", user="root", passwd="J455Dkje4815D14DkekD", db="medical_database")
 
         c = connection.cursor()
         id_patient = 5
