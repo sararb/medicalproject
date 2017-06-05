@@ -3,10 +3,12 @@
 
 import tkinter as tk
 from tkinter.filedialog import *
+from tkinter.messagebox import showerror
 import pickle
 import pandas as pd
 import MySQLdb
-
+import os
+import glob
 # Main application which allows us to navigate through windows
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -60,30 +62,46 @@ class Page1(tk.Frame):
         button4.pack(side="top")
 
     def importer_des_données(self):
-        #Getting path to data we want to load
-        filepath = askopenfilename(title="Import de dossiers patient",
-                                   filetypes=[('csv files', '.csv'), ('all files', '.*')])
 
-        # Putting data into a dataframe
-        new_data = pd.read_csv(filepath, sep=';', encoding='utf_8')
+        #Getting path to directory we want to load
+        directory = askdirectory(title="Import de dossiers patients")
+        print("The path to directory is "+directory)
+        cover = [file for file in glob.glob(directory+"/**/*.csv", recursive=True)]
+        print ("These are all the files paths"+', '.join(cover))
+        print("this is the csv content")
+        for j in cover:
+            try:
+                data = pd.read_csv(j, sep=';', encoding='utf_8')
+                #for index, row in data.iterrows():
+                    #print (row['patient_id'], row['review'])
+                for row in data.itertuples():
+                    print(row)
+                print(data)
+                print (data.values)
+                print(data.size)
+                print(data.__class__)
+                print(cover.__class__)
+                print(j)
+            except:
+                showerror()
+            return
 
-        # Apparently pickling will be use only to store models
-        #new_data.to_pickle('/home/sebastien/PycharmProjects/PFE/medicalproject/interface/new_data.csv')
+        #Getting path to the file we want to load
+        # filepath = askopenfilename(title="Import de dossier patient", filetypes=[('csv files', '.csv'), ('all files', '.*')])
+        # if filepath:
+        #     try:
+        #         # Putting data into a dataframe
+        #         new_data = pd.read_csv(filepath, sep=';', encoding='utf_8')
+        #         print (new_data)
+        #     except:  # <- naked except is a bad idea
+        #         showerror("Open Source File", "Failed to read file\n'%s'" % filepath)
+        #     return
 
-        #print(new_data.head(10))
-        print("Size")
-        print(new_data.size)
-        print("\n")
-        print("Info")
-        print(new_data.info())
-        print("\n")
-        #print("Data")
-        #for i in range(0,new_data.size-1)
-        #print (new_data)
-        #print(new_data.get_value(1, 'patient_id'))
+
+
 
     def see_database_content(self):
-        connection = MySQLdb.connect(host="localhost", user="root", passwd="J455Dkje4815D14DkekD", db="medical_database")
+        connection = MySQLdb.connect(host="localhost", user="root", passwd="Kaoutar08Ftouhi", db="medical_database")
 
         c = connection.cursor()
         c.execute("SELECT * FROM patient_database")
@@ -92,16 +110,14 @@ class Page1(tk.Frame):
             print(eachRow)
 
     def write_in_database(self):
-        connection = MySQLdb.connect(host="localhost", user="root", passwd="J455Dkje4815D14DkekD", db="medical_database")
+        connection = MySQLdb.connect(host="localhost", user="root", passwd="Kaoutar08Ftouhi", db="medical_database")
 
         c = connection.cursor()
-        id_patient = 5
-        review = 'Dossier médical'
-        classe = 0
-        c.execute("INSERT INTO patient_database (patient_id, review, class) VALUES (%s, %s, %s)",
-                  (id_patient, review, classe))
+        c.execute("INSERT INTO patient_database (id_patient, review, class) VALUES (%s, %s, %s)",
+                  (99, 'patient 99 review',0))
+        connection.commit()
 
-# Windows which allows the user to train new models
+# Windows which allows the user to train new models, store models
 class Page2(tk.Frame):
 
     def __init__(self, parent, controller):
