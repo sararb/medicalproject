@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 import tkinter as tk
 from tkinter.filedialog import *
 from tkinter.messagebox import showerror
@@ -20,10 +19,10 @@ class Page1(tk.Frame):
         button1 = tk.Button(self, text="Retour au menu principal", command=lambda: controller.show_frame(Menu))
         button1.pack(side="bottom")
 
-        button2 = tk.Button(self, text="Importer des fichiers patients", command=self.importer_des_données, )
+        button2 = tk.Button(self, text="Importer des fichiers patients", command=self.import_data, )
         button2.pack(side="top")
 
-        button3 = tk.Button(self, text="Ajouter le dossier d'un patient", command=self.import_des_données_one_patient, )
+        button3 = tk.Button(self, text="Ajouter le dossier d'un patient", command=self.import_unique_data, )
         button3.pack(side="top")
 
         button4 = tk.Button(self, text="Afficher les fichiers patients", command=self.see_database_content, )
@@ -77,7 +76,7 @@ class Page1(tk.Frame):
         df.drop(['_merge'], axis=1, inplace=True)
         return df
 
-    def importer_des_données(self):
+    def import_data(self):
 
         # Getting path to directory we want to load
         directory = askdirectory(title="Import de dossiers patients")
@@ -92,7 +91,8 @@ class Page1(tk.Frame):
         # For each file in the directory, read the content and copy it to the database
         for j in cover:
             data = pd.read_csv(j, sep=',', encoding='utf_8')
-            col_list = ['id_patient', 'review', 'class']
+            #patient_id, review_text and the Class
+            col_list = ['patient_id', 'review_text', 'Class']
             data = self.clean_df_db_dups(data, 'patient_database', engine, col_list)
             data.to_sql(name='patient_database', con=engine, index=False, if_exists='append')
 
@@ -107,14 +107,14 @@ class Page1(tk.Frame):
             #         showerror("Open Source File", "Failed to read file\n'%s'" % filepath)
             #     return
 
-    def import_des_données_one_patient(self):
+    def import_unique_data(self):
         engine = create_engine('mysql+mysqldb://root:Kaoutar08Ftouhi@localhost/medical_database?charset=utf8',
                                encoding='latin3')
         filepath = askopenfilename(title="Import d'un dossiers patient",
                                    filetypes=[('csv files', '.csv'), ('all files', '.*')])
 
         data = pd.read_csv(filepath, sep=',', encoding='utf_8')
-        col_list = ['id_patient', 'review', 'class']
+        col_list = ['patient_id', 'review_text', 'Class']
         data = self.clean_df_db_dups(data, 'patient_database', engine, col_list)
         data.to_sql(name='patient_database', con=engine, index=False, if_exists='append')
 

@@ -10,9 +10,9 @@ import MySQLdb
 import os
 import glob
 from sqlalchemy import create_engine
-from page1.Page1 import Page1
-from page2.Page2 import Page2
-from page3.Page3 import Page3
+from medicalproject.Project.Interface.page1.Page1 import Page1
+from medicalproject.Project.Interface.page2.Page2 import Page2
+from medicalproject.Project.Interface.page3.Page3 import Page3
 
 # Main application which allows us to navigate through windows
 class Application(tk.Tk):
@@ -33,7 +33,6 @@ class Application(tk.Tk):
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
-
 
 # Menu window
 class Menu(tk.Frame):
