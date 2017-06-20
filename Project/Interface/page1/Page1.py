@@ -18,18 +18,31 @@ class Page1(tk.Frame):
 
         button1 = tk.Button(self, text="Retour au menu principal", command=lambda: controller.show_frame(Menu))
         button1.pack(side="bottom")
-
-        button2 = tk.Button(self, text="Importer des fichiers patients", command=self.import_data, )
+        # Learning DATA
+        button2 = tk.Button(self, text="Importer des fichiers patients (apprentissage)", command=self.import_learning_data, )
         button2.pack(side="top")
 
-        button3 = tk.Button(self, text="Ajouter le dossier d'un patient", command=self.import_unique_data, )
+        button3 = tk.Button(self, text="Importer un fichier patient (apprentissage)", command=self.import_unique_learning_data, )
         button3.pack(side="top")
 
-        button4 = tk.Button(self, text="Afficher les fichiers patients", command=self.see_database_content, )
+        button4 = tk.Button(self, text="Afficher les données d'apprentissage", command=self.see_learning_table, )
         button4.pack(side="top")
 
-        button5 = tk.Button(self, text="Vider la base de donnée", command=self.clear_database, )
+        button5 = tk.Button(self, text="Vider la base de donnée d'apprentissage", command=self.clear_learning_table, )
         button5.pack(side="top")
+
+        # Prediction DATA
+        button6 = tk.Button(self, text="Importer des fichiers patients (prédiction)", command=self.import_prediction_data, )
+        button6.pack(side="top")
+
+        button7 = tk.Button(self, text="Importer un fichier patient (prédiction)", command=self.import_unique_prediction_data, )
+        button7.pack(side="top")
+
+        button8 = tk.Button(self, text="Afficher les données de prédiction", command=self.see_prediction_table, )
+        button8.pack(side="top")
+
+        button9 = tk.Button(self, text="Vider la base de donnée de prédiction", command=self.clear_prediction_table, )
+        button9.pack(side="top")
 
     def clean_df_db_dups(self, df, tablename, engine, dup_cols=[],
                          filter_continuous_col=None, filter_categorical_col=None):
@@ -76,7 +89,7 @@ class Page1(tk.Frame):
         df.drop(['_merge'], axis=1, inplace=True)
         return df
 
-    def import_data(self):
+    def import_learning_data(self):
 
         # Getting path to directory we want to load
         directory = askdirectory(title="Import de dossiers patients")
@@ -84,52 +97,87 @@ class Page1(tk.Frame):
         cover = glob.glob(directory + "/**/*.csv", recursive=True)
         # Initialize list of all patients observation (id, review, class)
         patients = []
-        # connection = MySQLdb.connect(host="localhost", user="root", passwd="Kaoutar08Ftouhi", db="medical_database")
         # Creating engine using sqlachemy to use data.to_sql function
         engine = create_engine('mysql+mysqldb://root:Kaoutar08Ftouhi@localhost/medical_database?charset=utf8',
                                encoding='latin3')
         # For each file in the directory, read the content and copy it to the database
         for j in cover:
-            data = pd.read_csv(j, sep=',', encoding='utf_8')
+            data = pd.read_csv(j, sep=',', encoding='latin_1')
             #patient_id, review_text and the Class
             col_list = ['patient_id', 'review_text', 'Class']
-            data = self.clean_df_db_dups(data, 'patient_database', engine, col_list)
-            data.to_sql(name='patient_database', con=engine, index=False, if_exists='append')
+            data = self.clean_df_db_dups(data, 'patient_labeled_table', engine, col_list)
+            data.to_sql(name='patient_labeled_table', con=engine, index=False, if_exists='append')
 
-            # Getting path to the file we want to load
-            # filepath = askopenfilename(title="Import de dossier patient", filetypes=[('csv files', '.csv'), ('all files', '.*')])
-            # if filepath:
-            #     try:
-            #         # Putting data into a dataframe
-            #         new_data = pd.read_csv(filepath, sep=';', encoding='utf_8')
-            #         print (new_data)
-            #     except:  # <- naked except is a bad idea
-            #         showerror("Open Source File", "Failed to read file\n'%s'" % filepath)
-            #     return
+    def import_prediction_data(self):
 
-    def import_unique_data(self):
+        # Getting path to directory we want to load
+        directory = askdirectory(title="Import de dossiers patients")
+        # Getting the list of all files to import
+        cover = glob.glob(directory + "/**/*.csv", recursive=True)
+        # Initialize list of all patients observation (id, review, class)
+        patients = []
+        # Creating engine using sqlachemy to use data.to_sql function
+        engine = create_engine('mysql+mysqldb://root:Kaoutar08Ftouhi@localhost/medical_database?charset=utf8',
+                               encoding='latin3')
+        # For each file in the directory, read the content and copy it to the database
+        for j in cover:
+            data = pd.read_csv(j, sep=',', encoding='latin_1')
+            #patient_id, review_text and the Class
+            col_list = ['patient_id', 'review_text']
+            data = self.clean_df_db_dups(data, 'patient_unlabeled_table', engine, col_list)
+            data.to_sql(name='patient_unlabeled_table', con=engine, index=False, if_exists='append')
+
+    def import_unique_learning_data(self):
         engine = create_engine('mysql+mysqldb://root:Kaoutar08Ftouhi@localhost/medical_database?charset=utf8',
                                encoding='latin3')
         filepath = askopenfilename(title="Import d'un dossiers patient",
                                    filetypes=[('csv files', '.csv'), ('all files', '.*')])
 
-        data = pd.read_csv(filepath, sep=',', encoding='utf_8')
+        data = pd.read_csv(filepath, sep=',', encoding='latin_1')
         col_list = ['patient_id', 'review_text', 'Class']
-        data = self.clean_df_db_dups(data, 'patient_database', engine, col_list)
-        data.to_sql(name='patient_database', con=engine, index=False, if_exists='append')
+        data = self.clean_df_db_dups(data, 'patient_labeled_table', engine, col_list)
+        data.to_sql(name='patient_labeled_table', con=engine, index=False, if_exists='append')
 
-    def see_database_content(self):
+    def import_unique_prediction_data(self):
+        engine = create_engine('mysql+mysqldb://root:Kaoutar08Ftouhi@localhost/medical_database?charset=utf8',
+                               encoding='latin3')
+        filepath = askopenfilename(title="Import d'un dossiers patient",
+                                   filetypes=[('csv files', '.csv'), ('all files', '.*')])
+
+        data = pd.read_csv(filepath, sep=',', encoding='latin_1')
+        col_list = ['patient_id', 'review_text']
+        data = self.clean_df_db_dups(data, 'patient_unlabeled_table', engine, col_list)
+        data.to_sql(name='patient_unlabeled_table', con=engine, index=False, if_exists='append')
+
+
+    def see_learning_table(self):
         connection = MySQLdb.connect(host="localhost", user="root", passwd="Kaoutar08Ftouhi", db="medical_database")
 
         c = connection.cursor()
-        c.execute("SELECT * FROM patient_database")
+        c.execute("SELECT * FROM patient_labeled_table")
         rows = c.fetchall()
         for eachRow in rows:
             print(eachRow)
 
-    def clear_database(self):
+    def see_prediction_table(self):
         connection = MySQLdb.connect(host="localhost", user="root", passwd="Kaoutar08Ftouhi", db="medical_database")
 
         c = connection.cursor()
-        c.execute("DELETE FROM patient_database")
+        c.execute("SELECT * FROM patient_unlabeled_table")
+        rows = c.fetchall()
+        for eachRow in rows:
+            print(eachRow)
+
+    def clear_learning_table(self):
+        connection = MySQLdb.connect(host="localhost", user="root", passwd="Kaoutar08Ftouhi", db="medical_database")
+
+        c = connection.cursor()
+        c.execute("DELETE FROM patient_labeled_table")
+        connection.commit()
+
+    def clear_prediction_table(self):
+        connection = MySQLdb.connect(host="localhost", user="root", passwd="Kaoutar08Ftouhi", db="medical_database")
+
+        c = connection.cursor()
+        c.execute("DELETE FROM patient_unlabeled_table")
         connection.commit()

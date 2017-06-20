@@ -35,7 +35,7 @@ class data_preprocessing():
         string = re.sub(r"\)", " \) ", string)
         string = re.sub(r"\?", " \? ", string)
         string = re.sub(r"\s{2,}", " ", string)
-        return cleaning_review.chunk_mot(string.lower())
+        return cleaning_review().chunk_mot(string.lower())
 
     def nltk_stemming(self, words):
         """
@@ -77,11 +77,11 @@ class data_preprocessing():
         if nltk_clean:
             if stemm:
                 print('stemming the reviews')
-                verbatims = verbatims.apply(lambda x: cleaning_review.nltk_words(x, stemm=True))
+                verbatims = verbatims.apply(lambda x: cleaning_review().nltk_words(x, stemm=True))
                 return list(verbatims.apply(lambda x: ' '.join(x))), labels, df
             else:
                 print('removing noisy words')
-                verbatims = verbatims.apply(lambda x: cleaning_review.nltk_words(x, stemm=False))
+                verbatims = verbatims.apply(lambda x: cleaning_review().nltk_words(x, stemm=False))
                 return list(verbatims.apply(lambda x: ' '.join(x))), labels, df
 
         return list(verbatims.apply(lambda x: ' '.join(x))), labels, df

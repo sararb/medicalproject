@@ -1,5 +1,7 @@
 # Define the functions nltk that process the text
 import nltk
+#nltk.download()
+from nltk import word_tokenize
 import re
 from nltk.corpus import stopwords
 import string
@@ -51,13 +53,13 @@ class cleaning_review():
         :return:
         """
         if stemm:
-            return word_stemmer(delete_stop_words(no_punctuation(words)))
-        return delete_stop_words(no_punctuation(words))
+            return self.word_stemmer(self.delete_stop_words(self.no_punctuation(words)))
+        return self.delete_stop_words(self.no_punctuation(words))
 
     def nltk_text(self, text, stemm=True):
-        text_f = delete_stop_words(no_punctuation(chunk_mot(text)))
+        text_f = self.delete_stop_words(self.no_punctuation(self.chunk_mot(text)))
         if stemm:
-            text_f = word_stemmer(text_f)
+            text_f = self.word_stemmer(text_f)
         # reconstruct the text
         textn = ' '.join(text_f)
         return textn
